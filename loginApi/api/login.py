@@ -1,17 +1,17 @@
 from flask import Blueprint, request
 from flask_restful import Api, Resource, reqparse
 from .. import db
-from ..model.Login import LoginUser
+from ..model.login2 import LoginUser #### WARN: This Method DOES NOT EXIST
 
-scholarSearchBp = Blueprint("scholarSearch", __name__)
-scholarSearchApi = Api(scholarSearchBp)
+loginUserhBp = Blueprint("loginUser", __name__)
+loginUserApi = Api(loginUserBp)
 
-class ScholarSearchAPI(Resource):
+class LoginUserAPI(Resource):
     def get(self):
         id = request.args.get("id")
-        scholarSearch = db.session.query(LoginUser).get(id)
-        if scholarSearch:
-            return scholarSearch.to_dict()
+        loginUser = db.session.query(LoginUser).get(id)
+        if loginUser:
+            return loginUser.to_dict()
         return {"message": "not found"}, 404
 
     def post(self):
@@ -20,12 +20,12 @@ class ScholarSearchAPI(Resource):
         parser.add_argument("username", required=True, type=str)
         parser.add_argument("password", required=True, type=str)
         args = parser.parse_args()
-        scholarSearch = LoginUser(args["username"], args["password"])
+        loginUser = LoginUser(args["username"], args["password"])
 
         try:
-            db.session.add(scholarSearch)
+            db.session.add(loginUser)
             db.session.commit()
-            return scholarSearch.to_dict(), 201
+            return loginUser.to_dict(), 201
         except Exception as exception:
             db.session.rollback()
             return {"message":f"error {exception}"}, 500
@@ -38,14 +38,14 @@ class ScholarSearchAPI(Resource):
         args = parser.parse_args()
         
         try:
-            scholarSearch = db.session.query(LoginUser).get(args["id"])
-            if scholarSearch:
+            loginUser = db.session.query(LoginUser).get(args["id"])
+            if loginUser:
                 if args["username"] is not None:
-                    scholarSearch.username = args["username"]
+                    loginUser.username = args["username"]
                 if args["password"] is not None:
-                    scholarSearch.password = args["password"]
+                    loginUser.password = args["password"]
                 db.session.commit()
-                return scholarSearch.to_dict(), 200
+                return loginUser.to_dict(), 200
             else:
                 return {"message": "not found"}, 404
         except Exception as exception:
@@ -58,21 +58,21 @@ class ScholarSearchAPI(Resource):
         args = parser.parse_args()
 
         try:
-            scholarSearch = db.session.query(LoginUser).get(args["id"])
-            if scholarSearch:
-                db.session.delete(scholarSearch)
+            loginUser = db.session.query(LoginUser).get(args["id"])
+            if loginUser:
+                db.session.delete(loginUser)
                 db.session.commit()
-                return scholarSearch.to_dict()
+                return loginUser.to_dict()
             else:
                 return {"message": "not found"}, 404
         except Exception as exception:
             db.session.rollback()
             return {"message": f"error {exception}"}, 500
 
-class ScholarSearchListAPI(Resource):
+class LoginUserListAPI(Resource):
     def get(self):
-        scholarSearch = db.session.query(LoginUser).all()
-        return [scholarSearch.to_dict() for scholar in scholarSearch]
+        loginUser = db.session.query(LoginUser).all()
+        return [loginUser.to_dict() for scholar in loginUser]
     
     def delete(self):
         try:
@@ -83,5 +83,5 @@ class ScholarSearchListAPI(Resource):
             db.session.rollback()
             return {"message": f"error {exception}"}
 
-scholarSearchApi.add_resource(ScholarSearchAPI, "/scholarSearch")
-scholarSearchApi.add_resource(ScholarSearchListAPI, "/scholarSearchList")
+loginUserApi.add_resource(LoginUserAPI, "/loginUser")
+loginUserApi.add_resource(LoginUserListAPI, "/loginUserList")
