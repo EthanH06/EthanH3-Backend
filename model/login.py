@@ -33,5 +33,5 @@ class LoginUser(db.Model):
     def to_dict(self):
         return {"id": self.id, "username": self.username, "password": self.password}
     
-def initScholarSearch():
+def initLoginUser():
     db.session.commit()

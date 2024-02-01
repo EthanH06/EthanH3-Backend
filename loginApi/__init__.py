@@ -4,23 +4,21 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 import os
 
-"""
-These object can be used throughout project.
-1.) Objects from this file can be included in many blueprints
-2.) Isolating these object definitions avoids duplication and circular dependencies
-"""
-
-# Setup of key Flask object (app)
 app = Flask(__name__)
 cors = CORS(app, supports_credentials=True)
 
-# Setup SQLAlchemy object and properties for the database (db)
-dbURI = 'sqlite:///volumes/sqlite.db'
+# Configuration
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SQLALCHEMY_DATABASE_URI'] = dbURI
-SECRET_KEY = os.environ.get('SECRET_KEY') or 'SECRET_KEY'
+
+# Use environment variable or a default value for database URI
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///volumes/sqlite.db')
+
+# Secret Key
+SECRET_KEY = os.environ.get('SECRET_KEY', 'SECRET_KEY')
 app.config['SECRET_KEY'] = SECRET_KEY
-db = SQLAlchemy()
+
+# SQLAlchemy and Migration
+db = SQLAlchemy(app)
 Migrate(app, db)
 
 # Images storage

@@ -3,7 +3,7 @@ from flask_restful import Api, Resource, reqparse
 from .. import db
 from ..model.login2 import LoginUser #### WARN: This Method DOES NOT EXIST
 
-loginUserhBp = Blueprint("loginUser", __name__)
+loginUserBp = Blueprint("loginUser", __name__)
 loginUserApi = Api(loginUserBp)
 
 class LoginUserAPI(Resource):
