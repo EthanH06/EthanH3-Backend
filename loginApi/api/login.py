@@ -3,7 +3,7 @@ from flask_restful import Api, Resource, reqparse
 from .. import db
 from ..model.login2 import LoginUser #### WARN: This Method DOES NOT EXIST
 
-loginUserBp = Blueprint("loginUser", __name__)
+loginUserBp = Blueprint("LoginUser", __name__)
 loginUserApi = Api(loginUserBp)
 
 class LoginUserAPI(Resource):
@@ -19,8 +19,9 @@ class LoginUserAPI(Resource):
         
         parser.add_argument("username", required=True, type=str)
         parser.add_argument("password", required=True, type=str)
+        parser.add_argument("state", required=True, type=str)
         args = parser.parse_args()
-        loginUser = LoginUser(args["username"], args["password"])
+        loginUser = LoginUser(args["username"], args["password"], args["state"])
 
         try:
             db.session.add(loginUser)
@@ -35,6 +36,7 @@ class LoginUserAPI(Resource):
         parser.add_argument("id", required=True, type=int)
         parser.add_argument("username")
         parser.add_argument("password")
+        parser.add_argument("state")
         args = parser.parse_args()
         
         try:
@@ -44,6 +46,8 @@ class LoginUserAPI(Resource):
                     loginUser.username = args["username"]
                 if args["password"] is not None:
                     loginUser.password = args["password"]
+                if args["password"] is not None:
+                    loginUser.password = args["state"]
                 db.session.commit()
                 return loginUser.to_dict(), 200
             else:
@@ -72,7 +76,7 @@ class LoginUserAPI(Resource):
 class LoginUserListAPI(Resource):
     def get(self):
         loginUser = db.session.query(LoginUser).all()
-        return [loginUser.to_dict() for scholar in loginUser]
+        return [loginUser.to_dict() for login in loginUser]
     
     def delete(self):
         try:
